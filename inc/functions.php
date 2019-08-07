@@ -45,4 +45,13 @@ function remove_beginning_articles($str) {
   return $str;
 }
 
+/*
+ * Generate drop-down <option> line in 'suggest.php'
+ */
+function get_option_html($option, $current) {
+  return "<option value='$option' "
+    . (isset($current) && $current === $option ? 'selected' : '') .
+    ">$option</option>";
+}
+
 ?>

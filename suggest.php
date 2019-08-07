@@ -11,77 +11,81 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   $name = trim(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING));
   $email = trim(filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL));
+
+  $title = trim(filter_input(INPUT_POST, 'title', FILTER_SANITIZE_STRING));
+  $category = trim(filter_input(INPUT_POST, 'category', FILTER_SANITIZE_STRING));
+  $format = trim(filter_input(INPUT_POST, 'format', FILTER_SANITIZE_STRING));
+  $genre = trim(filter_input(INPUT_POST, 'genre', FILTER_SANITIZE_STRING));
+  $year = trim(filter_input(INPUT_POST, 'year', FILTER_SANITIZE_NUMBER_INT));
+
   $details = trim(filter_input(INPUT_POST, 'details', FILTER_SANITIZE_SPECIAL_CHARS));
 
-  if ($name === '' || $email === '' || $details === '')
-  {
-    echo 'Please fill in the required fields: Name, Email, and Details';
-    exit;
-  }
+  if ($name === '' || $email === '' || $title === '' || $category === '')
+    $error_message = 'Please fill in the required fields: Name, Email, Title, and Category.';
 
-  if (!PHPMailer::validateAddress($email)) {
-    echo "Invalid email address: $email";
-    exit;
-  }
+  if (!isset($error_message) && !PHPMailer::validateAddress($email))
+    $error_message = "Invalid email address: $email";
 
   /* Check if a bot filled this invisible field */
-  if ($_POST['address'] !== '') {
-    echo 'Are you a bot LOL!';
-    exit;
-  }
+  if (!isset($error_message) && $_POST['address'] !== '')
+    $error_message = 'Are you a bot LOL!';
 
   /* Send email from Gmail account */
-  $mail = new PHPMailer;
+  if (!isset($error_message)) {
+    $mail = new PHPMailer();
+    $mail->isSMTP();
+    $mail->SMTPDebug = 2;
+    $mail->Host = 'smtp.gmail.com';
+    $mail->Port = 587;
+    $mail->SMTPSecure = 'tls';
+    $mail->SMTPAuth = true;
+    $mail->Username = 'lurkinator@gmail.com';
+    $mail->Password = 'oljjgacestxvbtdh';
 
-  // Tell PHPMailer to use SMTP
-  $mail->isSMTP();
-  // Enable SMTP debugging
-  // 0 = off (for production use)
-  // 1 = client messages
-  // 2 = client and server messages
-  $mail->SMTPDebug = 2;
-  //Set the hostname of the mail server
-  $mail->Host = 'smtp.gmail.com';
-  // use
-  // $mail->Host = gethostbyname('smtp.gmail.com');
-  // if your network does not support SMTP over IPv6
-  // Set the SMTP port number - 587 for authenticated TLS, a.k.a. RFC4409 SMTP submission
-  $mail->Port = 587;
-  // Set the encryption system to use - ssl (deprecated) or tls
-  $mail->SMTPSecure = 'tls';
-  // Whether to use SMTP authentication
-  $mail->SMTPAuth = true;
-  // Username to use for SMTP authentication - use full email address for gmail
-  $mail->Username = 'lurkinator@gmail.com';
-  // Password to use for SMTP authentication
-  $mail->Password = 'oljjgacestxvbtdh';
-
-  // It's important not to use the submitter's address as the from address as it's forgery,
-  // which will cause your messages to fail SPF checks.
-  // Use an address in your own domain as the from address, put the submitter's address in a reply-to
-  $mail->setFrom('lurkinator@gmail.com', $name);
-  $mail->addReplyTo($email, $name);
-  $mail->addAddress('andyshih51@gmail.com');
-  
-  $mail->Subject = "Library Suggestion from $name";
-  $mail->Body = <<<END
+    $mail->setFrom('lurkinator@gmail.com', $name);
+    $mail->addReplyTo($email, $name);
+    $mail->addAddress('andyshih51@gmail.com');
+    
+    $mail->Subject = "Library Suggestion from $name";
+    $mail->Body = <<<END
 Name: $name
 Email: $email
+
+Suggested Item:
+
+Title: $title
+Category: $category
+Format: $format
+Genre: $genre
+Year: $year
 Details: $details
 END;
-  
-  if (!$mail->send()) {
-    echo 'Mailer Error: ' . $mail->ErrorInfo;
-    exit;
+    
+    if (!$mail->send())
+      exit (header('Location: suggest.php?status=thanks'));
+    else
+      $error_message = 'Mailer Error: ' . $mail->ErrorInfo;
   }
-  
-  exit (header('Location: suggest.php?status=thanks'));
 }
 
 $page_title = 'Suggest a Media Item';
 $section = 'suggest';
 
-include 'inc/header.php'; 
+$genres = ['Books', 'Movies', 'Music'];
+
+$format_books = ['Audio', 'Ebook', 'Hardback', 'Paperback'];
+$format_movies = ['Blu-ray', 'DVD', 'Streaming', 'VHS'];
+$format_music = ['Cassette', 'CD', 'MP3', 'Vinyl'];
+
+$genre_books = ['Action', 'Adventure', 'Comedy', 'Fantasy', 'Historical', 'Historical Fiction', 'Horror', 'Magical Realism',
+  'Mystery', 'Paranoid', 'Philosophical', 'Romance', 'Saga', 'Satire', 'Sci-Fi', 'Tech', 'Thriller', 'Urban'];
+$genre_movies = ['Action', 'Adventure', 'Animation', 'Biography', 'Comedy', 'Crime', 'Documentary', 'Drama', 'Family', 'Fantasy',
+  'Film-Noir', 'History', 'Horror', 'Musical', 'Mystery', 'Romance', 'Sci-Fi', 'Sports', 'Thriller', 'War', 'Western'];
+$genre_music = ['Alternative', 'Blues', 'Classical', 'Country', 'Dance', 'Easy Listening', 'Electronic', 'Folk', 'Hip Hop/Rap',
+  'Inspirational/Gospel', 'Jazz', 'Latin', 'New Age', 'Opera', 'Pop', 'R&B/Soul', 'Reggae', 'Rock'];
+
+include 'inc/header.php';
+include 'inc/functions.php';
 ?>
 
 <div class="section page">
@@ -91,22 +95,109 @@ include 'inc/header.php';
     <?php if (isset($_GET['status']) && $_GET['status'] === 'thanks') {?>
       <p>Thank you for the email! I&apos;ll check out your suggestion shortly!</p>
     <!-- Show input form -->
-    <?php } else { ?>
-      <p>If you think there is something missing, let me know! Complete the form to send me an email.</p>
+    <?php
+    } else {
+      if (isset($error_message))
+        echo "<p class='message'>$error_message</p>";
+      else
+        echo '<p>If you think there is something missing, let me know! Complete the form to send me an email.</p>';
+    ?>
       <form method="post" action="suggest.php">
         <table>
+          <!-- Name -->
           <tr>
-            <th><label for="name">Name</label></th>
-            <td><input type="text" id="name" name="name"></td>
+            <th><label for="name">Name (required)</label></th>
+            <td><input type="text" id="name" name="name" value="<?= $name ?? '' ?>"></td>
           </tr>
+          <!-- Email -->
           <tr>
-            <th><label for="email">Email</label></th>
-            <td><input type="text" id="email" name="email"></td>
+            <th><label for="email">Email (required)</label></th>
+            <td><input type="text" id="email" name="email" value="<?= $email ?? '' ?>"></td>
           </tr>
+          <!-- Category -->
           <tr>
-            <th><label for="details">Suggest Item Details</label></th>
-            <td><textarea id="details" name="details"></textarea></td>
+            <th><label for="category">Category (required)</label></th>
+            <td>
+              <select id="category" name="category">
+                <option value="">Select One</option>
+                <?php
+                foreach (['Books', 'Movies', 'Music'] as $option)
+                  echo get_option_html($option, $category);
+                ?>
+              </select>
+            </td>
           </tr>
+          <!-- Title -->
+          <tr>
+            <th><label for="title">Title (required)</label></th>
+            <td><input type="text" id="title" name="title" value="<?= $title ?? '' ?>"></td>
+          </tr>
+          <!-- Format -->
+          <tr>
+            <th><label for="format">Format</label></th>
+            <td>
+              <select id="format" name="format">
+                <option value="">Select One</option>
+                <optgroup id="format_books" label="Books">
+                  <?php
+                  foreach ($format_books as $option)
+                    echo get_option_html($option, $format);
+                  ?>
+                </optgroup>
+                <optgroup id="format_movies" label="Movies">
+                  <?php
+                  foreach ($format_movies as $option)
+                    echo get_option_html($option, $format);
+                  ?>
+                </optgroup>
+                <optgroup id="format_music" label="Music">
+                  <?php
+                  foreach ($format_music as $option)
+                    echo get_option_html($option, $format);
+                  ?>
+                </optgroup>
+              </select>
+            </td>
+          </tr>
+          <!-- Genre -->
+          <tr>
+            <th><label for="genre">Genre</label></th>
+            <td>
+              <select name="genre" id="genre">
+                <option value="">Select One</option>
+                <optgroup id="genre_books" label="Books">
+                  <?php
+                  foreach ($genre_books as $option)
+                    echo get_option_html($option, $genre);
+                  ?>
+                </optgroup>
+                <optgroup id="genre_movies" label="Movies">
+                  <?php
+                  foreach ($genre_movies as $option)
+                    echo get_option_html($option, $genre);
+                  ?>
+                </optgroup>
+                <optgroup id="genre_music" label="Music">
+                  <?php
+                  foreach ($genre_music as $option)
+                    echo get_option_html($option, $genre);
+                  ?>
+                </optgroup>
+              </select>
+            </td>
+          </tr>
+          <!-- Year -->
+          <tr>
+            <th><label for="year">Year</label></th>
+            <td><input type="text" id="year" name="year" value="<?= $year ?? '' ?>"></td>
+          </tr>
+          <!-- Details -->
+          <tr>
+            <th><label for="details">Additional Details</label></th>
+            <td><textarea id="details" name="details"><?= $details ?? '' ?></textarea></td>
+            <!-- <td><textarea id="details" name="details"><?= $_POST['details'] ?></textarea></td> -->
+          </tr>
+          <!-- Invisible field for bots -->
           <tr style="display:none">
             <th><label for="address">Address</label></th>
             <td>
@@ -117,6 +208,9 @@ include 'inc/header.php';
         </table>
         <input type="submit" value="Send">
       </form>
+      <!-- jQuery to show/hide relevant form options -->
+      <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+      <script src="js/suggest_showhide.js"></script>
     <?php } ?>
   </div>
 </div>
