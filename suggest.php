@@ -7,8 +7,6 @@ require 'vendor/phpmailer/src/Exception.php';
 
 /* Check if form was submitted */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  // extract($_POST);  /* Extract values into $name, $email, $details */
-
   $name = trim(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING));
   $email = trim(filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL));
 
@@ -17,7 +15,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $format = trim(filter_input(INPUT_POST, 'format', FILTER_SANITIZE_STRING));
   $genre = trim(filter_input(INPUT_POST, 'genre', FILTER_SANITIZE_STRING));
   $year = trim(filter_input(INPUT_POST, 'year', FILTER_SANITIZE_NUMBER_INT));
-
   $details = trim(filter_input(INPUT_POST, 'details', FILTER_SANITIZE_SPECIAL_CHARS));
 
   if ($name === '' || $email === '' || $title === '' || $category === '')
@@ -61,7 +58,7 @@ Year: $year
 Details: $details
 END;
     
-    if (!$mail->send())
+    if ($mail->send())
       exit (header('Location: suggest.php?status=thanks'));
     else
       $error_message = 'Mailer Error: ' . $mail->ErrorInfo;
@@ -114,6 +111,11 @@ include 'inc/functions.php';
             <th><label for="email">Email (required)</label></th>
             <td><input type="text" id="email" name="email" value="<?= $email ?? '' ?>"></td>
           </tr>
+          <!-- Title -->
+          <tr>
+            <th><label for="title">Title (required)</label></th>
+            <td><input type="text" id="title" name="title" value="<?= $title ?? '' ?>"></td>
+          </tr>
           <!-- Category -->
           <tr>
             <th><label for="category">Category (required)</label></th>
@@ -126,11 +128,6 @@ include 'inc/functions.php';
                 ?>
               </select>
             </td>
-          </tr>
-          <!-- Title -->
-          <tr>
-            <th><label for="title">Title (required)</label></th>
-            <td><input type="text" id="title" name="title" value="<?= $title ?? '' ?>"></td>
           </tr>
           <!-- Format -->
           <tr>
@@ -195,7 +192,6 @@ include 'inc/functions.php';
           <tr>
             <th><label for="details">Additional Details</label></th>
             <td><textarea id="details" name="details"><?= $details ?? '' ?></textarea></td>
-            <!-- <td><textarea id="details" name="details"><?= $_POST['details'] ?></textarea></td> -->
           </tr>
           <!-- Invisible field for bots -->
           <tr style="display:none">
