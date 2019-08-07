@@ -2,14 +2,13 @@
 include 'inc/data.php';
 include 'inc/functions.php';
 
-if (isset($_GET['id'])) {
-  $id = $_GET['id'];
-  if (isset($catalog[$id])) {
-    $item = $catalog[$id];
-  }
-}
-
-if (!isset($item)) {
+/*
+ * Check 'id' is provided and is valid.
+ * Otherwise, redirect to 'catalog.php'
+ */
+if (isset($_GET['id']) && isset($catalog[$_GET['id']])) {
+  $item = $catalog[$_GET['id']];
+} else {
   header('location:catalog.php');
   exit;
 }
