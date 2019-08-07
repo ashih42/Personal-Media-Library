@@ -50,8 +50,8 @@ function remove_beginning_articles($str) {
  */
 function get_option_html($option, $current) {
   return "<option value='$option' "
-    . (isset($current) && $current === $option ? 'selected' : '') .
-    ">$option</option>";
+    . (isset($current) && $current === $option ? 'selected' : '')
+    . ">$option</option>";
 }
 
 ?>
