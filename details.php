@@ -6,12 +6,10 @@ include 'inc/functions.php';
  * Check 'id' is provided and is valid.
  * Otherwise, redirect to 'catalog.php'
  */
-if (isset($_GET['id']) && isset($catalog[$_GET['id']])) {
+if (isset($_GET['id']) && isset($catalog[$_GET['id']]))
   $item = $catalog[$_GET['id']];
-} else {
-  header('location:catalog.php');
-  exit;
-}
+else
+  exit (header('Location: catalog.php'));
 
 $page_title = $item['title'];
 $section = null;
