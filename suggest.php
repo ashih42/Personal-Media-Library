@@ -36,12 +36,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $mail->Port = 587;
     $mail->SMTPSecure = 'tls';
     $mail->SMTPAuth = true;
-    $mail->Username = 'lurkinator@gmail.com';
+    $mail->Username = 'doge@gmail.com';
     $mail->Password = 'oljjgacestxvbtdh';
 
-    $mail->setFrom('lurkinator@gmail.com', $name);
+    $mail->setFrom('doge@gmail.com', $name);
     $mail->addReplyTo($email, $name);
-    $mail->addAddress('andyshih51@gmail.com');
+    $mail->addAddress('doge@gmail.com');
     
     $mail->Subject = "Library Suggestion from $name";
     $mail->Body = <<<END
