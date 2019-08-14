@@ -74,12 +74,12 @@ $format_books = ['Audio', 'Ebook', 'Hardback', 'Paperback'];
 $format_movies = ['Blu-ray', 'DVD', 'Streaming', 'VHS'];
 $format_music = ['Cassette', 'CD', 'MP3', 'Vinyl'];
 
-$genre_books = ['Action', 'Adventure', 'Comedy', 'Fantasy', 'Historical', 'Historical Fiction', 'Horror', 'Magical Realism',
-  'Mystery', 'Paranoid', 'Philosophical', 'Romance', 'Saga', 'Satire', 'Sci-Fi', 'Tech', 'Thriller', 'Urban'];
-$genre_movies = ['Action', 'Adventure', 'Animation', 'Biography', 'Comedy', 'Crime', 'Documentary', 'Drama', 'Family', 'Fantasy',
-  'Film-Noir', 'History', 'Horror', 'Musical', 'Mystery', 'Romance', 'Sci-Fi', 'Sports', 'Thriller', 'War', 'Western'];
-$genre_music = ['Alternative', 'Blues', 'Classical', 'Country', 'Dance', 'Easy Listening', 'Electronic', 'Folk', 'Hip Hop/Rap',
-  'Inspirational/Gospel', 'Jazz', 'Latin', 'New Age', 'Opera', 'Pop', 'R&B/Soul', 'Reggae', 'Rock'];
+// $genre_books = ['Action', 'Adventure', 'Comedy', 'Fantasy', 'Historical', 'Historical Fiction', 'Horror', 'Magical Realism',
+//   'Mystery', 'Paranoid', 'Philosophical', 'Romance', 'Saga', 'Satire', 'Sci-Fi', 'Tech', 'Thriller', 'Urban'];
+// $genre_movies = ['Action', 'Adventure', 'Animation', 'Biography', 'Comedy', 'Crime', 'Documentary', 'Drama', 'Family', 'Fantasy',
+//   'Film-Noir', 'History', 'Horror', 'Musical', 'Mystery', 'Romance', 'Sci-Fi', 'Sports', 'Thriller', 'War', 'Western'];
+// $genre_music = ['Alternative', 'Blues', 'Classical', 'Country', 'Dance', 'Easy Listening', 'Electronic', 'Folk', 'Hip Hop/Rap',
+//   'Inspirational/Gospel', 'Jazz', 'Latin', 'New Age', 'Opera', 'Pop', 'R&B/Soul', 'Reggae', 'Rock'];
 
 include 'inc/header.php';
 include 'inc/functions.php';
@@ -162,24 +162,19 @@ include 'inc/functions.php';
             <td>
               <select name="genre" id="genre">
                 <option value="">Select One</option>
-                <optgroup id="genre_books" label="Books">
-                  <?php
-                  foreach ($genre_books as $option)
-                    echo get_option_html($option, $genre);
-                  ?>
-                </optgroup>
-                <optgroup id="genre_movies" label="Movies">
-                  <?php
-                  foreach ($genre_movies as $option)
-                    echo get_option_html($option, $genre);
-                  ?>
-                </optgroup>
-                <optgroup id="genre_music" label="Music">
-                  <?php
-                  foreach ($genre_music as $option)
-                    echo get_option_html($option, $genre);
-                  ?>
-                </optgroup>
+                <?php
+                $genre_array = genre_array();
+                foreach ($genre_array as $category => $options) {
+                  echo "<optgroup id='genre_" . strtolower($category) . "' label=$category>";
+                  foreach ($options as $option) {
+                    echo "<option value='$option' ";
+                    if (isset($genre) && $genre === $option)
+                      echo " selected";
+                    echo ">$option</option>";
+                  }
+                  echo '</optgroup>';
+                }
+                ?>
               </select>
             </td>
           </tr>

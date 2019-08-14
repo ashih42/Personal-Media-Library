@@ -1,5 +1,5 @@
 <?php
-include 'inc/data.php';
+
 include 'inc/functions.php';
 
 $page_title = 'Personal Media Library';
@@ -13,10 +13,8 @@ include 'inc/header.php';
     <h2>May we suggest something?</h2>
     <ul class="items">
       <?php
-      $random_ids = array_rand($catalog, 4);
-      shuffle($random_ids);
-      foreach ($random_ids as $id)
-        echo get_item_html($id, $catalog[$id]);
+      foreach (random_catalog_array() as $item)
+        echo get_item_html($item);
       ?>
     </ul>
   </div>

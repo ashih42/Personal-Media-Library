@@ -15,4 +15,11 @@
         </ul>
       </div>
     </div>
+    <div class="search">
+      <form method="get" action="catalog.php">
+        <label for="s">Search:</label>
+        <input type="text" id="s" name="s">
+        <input type="submit" value="Go">
+      </form>
+    </div>
     <div id="content">

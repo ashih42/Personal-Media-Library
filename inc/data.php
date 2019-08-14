@@ -1,5 +1,8 @@
 <?php
 
+include 'connection.php';
+
+/*
 $catalog = [];
 $catalog[101] = [
 	'title' => 'A Design Patterns: Elements of Reusable Object-Oriented Software',
@@ -184,5 +187,6 @@ $catalog[304] = [
     'category' => 'Music',
     'artist' => 'Nat King Cole'
 ];
+*/
 
 ?>
